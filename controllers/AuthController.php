@@ -44,7 +44,8 @@ class AuthController extends BaseController {
             );
             
             // Update last login
-            $this->db->execute("UPDATE users SET last_login = NOW() WHERE id = ?", [$user['id']]);
+            $timestamp = $this->db->getCurrentTimestamp();
+            $this->db->execute("UPDATE users SET last_login = {$timestamp} WHERE id = ?", [$user['id']]);
             
             $this->response->success([
                 'user' => [
@@ -75,7 +76,7 @@ class AuthController extends BaseController {
             $validator->minLength($data['name'] ?? '', 2, 'Name must be at least 2 characters');
             $validator->required($data['email'] ?? '', 'Email is required');
             $validator->email($data['email'] ?? '', 'Invalid email format');
-            $validator->unique('users', 'email', $data['email'] ?? '', 'Email already exists');
+            $validator->unique($data['email'] ?? '', 'email', 'users', 'email');
             $validator->required($data['password'] ?? '', 'Password is required');
             $validator->passwordStrength($data['password'] ?? '', 'Password must be at least 8 characters with uppercase, lowercase, and number');
             
@@ -86,12 +87,14 @@ class AuthController extends BaseController {
             
             $name = $this->sanitize($data['name']);
             $email = $this->sanitize($data['email']);
+            $username = $this->sanitize($data['username']);
             $password = password_hash($data['password'], PASSWORD_DEFAULT);
             $role = $this->sanitize($data['role'] ?? 'user');
             
             // Insert new user
-            $query = "INSERT INTO users (name, email, password, role, status, created_at) VALUES (?, ?, ?, ?, 'active', NOW())";
-            $userId = $this->db->execute($query, [$name, $email, $password, $role]);
+            $timestamp = $this->db->getCurrentTimestamp();
+            $query = "INSERT INTO users (name, email, username, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, 'active', {$timestamp})";
+            $userId = $this->db->execute($query, [$name, $email, $username, $password, $role]);
             
             if ($userId) {
                 $this->response->created([

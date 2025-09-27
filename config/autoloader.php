@@ -3,6 +3,9 @@
  * Simple Autoloader for API Classes
  */
 
+// Load configuration first
+require_once __DIR__ . '/config.php';
+
 spl_autoload_register(function ($className) {
     // Define base directories for different types of classes
     $directories = [

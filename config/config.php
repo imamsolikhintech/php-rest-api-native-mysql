@@ -4,11 +4,15 @@
  */
 
 // Database Configuration
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'db');
+define('DB_PORT', '3306');
 define('DB_NAME', 'bootcamp_db');
 define('DB_USER', 'root');
-define('DB_PASS', 'password');
+define('DB_PASS', 'rootpassword');
 define('DB_CHARSET', 'utf8mb4');
+
+// SQLite fallback for development
+define('SQLITE_DB_PATH', __DIR__ . '/../data/bootcamp.db');
 
 // API Configuration
 define('API_VERSION', 'v1');
